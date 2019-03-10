@@ -8,6 +8,6 @@ Replicates all new objects in a source bucket to a configurable number of other 
 
 ENVIRONMENT VARIABLES
 ---------------------
-- **REPLICANT_BUCKETS** Comma-seperated list of bucket names to replicate to.
+- **DESTINATION_BUCKETS** Comma-seperated list of bucket names to replicate to.
 
 License: `APL2`_
