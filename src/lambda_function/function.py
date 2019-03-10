@@ -26,7 +26,7 @@ def handler(event, context):
 def process_record(bucket_record):
   bucket = bucket_record[0]
   record = bucket_record[1]
-  if record['eventName'] == 'ObjectCreated:Put':
+  if record['eventName'].startswith('ObjectCreated:'):
     bucket.copy(
       CopySource={
         'Bucket': record['s3']['bucket']['name'],
@@ -34,7 +34,7 @@ def process_record(bucket_record):
       },
       Key=record['s3']['object']['key']
     )
-  elif record['eventName'] == 'ObjectRemoved:Delete':
+  elif record['eventName'].startswith('ObjectRemoved:'):
     bucket.delete_objects(
       Delete={
         'Objects': [
