@@ -1,6 +1,7 @@
 import boto3
 import logging
 import os
+import urllib.parse
 
 from botocore.client import Config
 from multiprocessing.pool import ThreadPool
@@ -26,29 +27,31 @@ def handler(event, context):
 def process_record(bucket_record):
   bucket = bucket_record[0]
   record = bucket_record[1]
+  key = urllib.parse.unquote(record['s3']['object']['key'])
+
   if record['eventName'].startswith('ObjectCreated:'):
     logger.info('Copying {} from {} to {}'.format(
-      record['s3']['object']['key'], 
+      key, 
       record['s3']['bucket']['name'], 
       bucket.name
     ))
     bucket.copy(
       CopySource={
         'Bucket': record['s3']['bucket']['name'],
-        'Key': record['s3']['object']['key']
+        'Key': key
       },
-      Key=record['s3']['object']['key']
+      Key=key
     )
   elif record['eventName'].startswith('ObjectRemoved:'):
     logger.info('Deleting {} from {}'.format(
-      record['s3']['object']['key'], 
+      key, 
       bucket.name
     ))
     bucket.delete_objects(
       Delete={
         'Objects': [
           {
-            'Key': record['s3']['object']['key']
+            'Key': key
           }
         ],
         'Quiet': True
